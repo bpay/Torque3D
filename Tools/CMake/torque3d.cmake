@@ -589,6 +589,17 @@ endif()
 # external things
 if(WIN32)
     set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY INCLUDE_DIRECTORIES $ENV{DXSDK_DIR}/Include)
+
+    # Give debug builds unique executable names to enable switching between
+    # configurations in visual studio without needing to rebuild. Release keeps
+    # the undecorated name so as not to complicate packaging for shipping builds.
+    FOREACH(CONF ${CMAKE_CONFIGURATION_TYPES})
+        if(NOT ${CONF} STREQUAL "Release")
+            string(TOUPPER "${CONF}" CONFU)
+            set_property(TARGET ${PROJECT_NAME}
+                         PROPERTY ${CONFU}_OUTPUT_NAME ${PROJECT_NAME}.${CONF})
+        endif()
+    ENDFOREACH()
 endif()
 
 if(UNIX)
